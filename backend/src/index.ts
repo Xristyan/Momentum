@@ -3,12 +3,12 @@ import { name } from "./test";
 import { DataTypes, Sequelize } from "sequelize";
 
 const app = express();
-const port = 3000;
+const port = 8000;
 
 // Option 1: Passing a connection URI
 
 const sequelize = new Sequelize(
-  "postgres://postgres:753159@localhost:5432/postgres",
+  `postgres://${process.env.POSTGRES_USER}:${process.env.POSTGRES_PASSWORD}@postgres:5432/${process.env.POSTGRES_DB}`,
 ); // Example for postgres
 
 const User = sequelize.define(
@@ -31,18 +31,20 @@ const User = sequelize.define(
 );
 
 app.get("/", async (req, res) => {
+  console.log(process?.env?.POSTGRES_USER, "hi");
   try {
     await sequelize.authenticate();
 
     const users = await User.findAll(); // Query all users
 
     // Send the users as JSON response
-    console.log(users);
+    console.log("users", users);
 
     console.log("Connection has been established successfully.");
   } catch (error) {
     console.error("Unable to connect to the database:", error);
   }
+  console.log("name", name);
   res.send(`Hello ${name}!`);
 });
 

@@ -1,0 +1,49 @@
+services:
+  backend:
+    build: ./backend
+    develop:
+      watch:
+        - action: sync
+          path: ./backend
+          target: /app
+          ignore:
+            - node_modules/
+        - action: rebuild
+          path: package.json
+    ports:
+      - "8000:8000"
+    volumes:
+      - /app/node_modules
+    depends_on:
+      - postgres
+    env_file:
+      - ./backend/.env
+
+  postgres:
+    image: postgres
+    restart: always
+    shm_size: 128mb
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: 753159
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres
+    volumes:
+      - db_data:/var/lib/postgresql/data
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: 753159
+      PGADMIN_LISTEN_PORT: 8001
+    volumes:
+      - pgadmin:/var/lib/pgadmin
+    ports:
+      - "8001:8001"
+    depends_on:
+      - postgres
+
+volumes:
+  db_data:
+  pgadmin:
