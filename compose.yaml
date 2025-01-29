@@ -18,7 +18,23 @@ services:
       - postgres
     env_file:
       - ./backend/.env
-
+  frontend:
+    build: ./frontend/momentum
+    develop:
+      watch:
+        - action: sync
+          path: ./frontend/momentum
+          target: /app
+          ignore:
+            - node_modules/
+        - action: rebuild
+          path: package.json
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    stdin_open: true
+    tty: true
   postgres:
     image: postgres
     restart: always

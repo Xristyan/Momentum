@@ -30,8 +30,11 @@ const User = sequelize.define(
   },
 );
 
+app.get("/test", async (req, res) => {
+  res.json({ test: "test" });
+});
+
 app.get("/", async (req, res) => {
-  console.log(process?.env?.POSTGRES_USER, "hi");
   try {
     await sequelize.authenticate();
 
@@ -44,7 +47,6 @@ app.get("/", async (req, res) => {
   } catch (error) {
     console.error("Unable to connect to the database:", error);
   }
-  console.log("name", name);
   res.send(`Hello ${name}!`);
 });
 
