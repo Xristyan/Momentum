@@ -5,6 +5,9 @@ const testfetch = async () => {
   try {
     console.log("fetching");
     const response = await fetch("http://backend:8000/test");
+    if (!response.ok) {
+      throw new Error("Network response was not ok");
+    }
     const data = await response.json();
     console.log(data);
   } catch (error) {

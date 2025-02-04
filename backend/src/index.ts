@@ -1,57 +1,50 @@
-import express from "express";
+import express, { NextFunction } from "express";
 import { name } from "./test";
-import { DataTypes, Sequelize } from "sequelize";
+import sequelize from "./config/database";
+import logger from "./config/logger";
+import helmet from "helmet";
+import "./models";
+import morganMiddleware from "./middlewares/morgan.middleware";
+import notFoundRoute from "./routes/notFound.route";
+import errorMiddleware from "./middlewares/error.middleware";
+import { CustomError } from "./error/error";
 
 const app = express();
 const port = 8000;
 
-// Option 1: Passing a connection URI
+app.use(helmet());
+app.use(morganMiddleware);
+app.use(express.json({ limit: "1000kb" }));
 
-const sequelize = new Sequelize(
-  `postgres://${process.env.POSTGRES_USER}:${process.env.POSTGRES_PASSWORD}@postgres:5432/${process.env.POSTGRES_DB}`,
-); // Example for postgres
-
-const User = sequelize.define(
-  "User",
-  {
-    id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true,
-    },
-    name: {
-      type: DataTypes.CHAR,
-    },
-  },
-  {
-    tableName: '"Users"', // Case-sensitive table name with double quotes
-    schema: "public", // Public schema
-    timestamps: false, //
-  },
-);
-
-app.get("/test", async (req, res) => {
-  res.json({ test: "test" });
-});
-
-app.get("/", async (req, res) => {
+app.get("/", async (req, res, next: NextFunction) => {
   try {
     await sequelize.authenticate();
 
-    const users = await User.findAll(); // Query all users
-
-    // Send the users as JSON response
-    console.log("users", users);
-
-    console.log("Connection has been established successfully.");
+    logger.info("Connection has been established successfully.");
+    // throw new CustomError("Test Error", 400);
   } catch (error) {
-    console.error("Unable to connect to the database:", error);
+    return next(error);
   }
-  res.send(`Hello ${name}!`);
+
+  res.send(`Hello ${name}!!`);
 });
 
-console.log("Hello World!");
+app.use(notFoundRoute);
+
+app.use(errorMiddleware);
+
+process.on(
+  "unhandledRejection",
+  (reason: string, promise: Promise<unknown>) => {
+    logger.error("Unhandled Rejection at:", promise, "reason:", reason);
+  },
+);
+
+process.on("uncaughtException", (error) => {
+  logger.error("Uncaught Exception:", error);
+  process.exit(1);
+});
 
 app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
+  logger.info(`Server running at http://localhost:${port}`);
 });

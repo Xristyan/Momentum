@@ -43,8 +43,8 @@ services:
       - "5432:5432"
     environment:
       POSTGRES_PASSWORD: 753159
-      POSTGRES_USER: postgres
-      POSTGRES_DB: postgres
+      POSTGRES_USER: momentum
+      POSTGRES_DB: momentum
     volumes:
       - db_data:/var/lib/postgresql/data
   pgadmin:
