@@ -1,23 +1,7 @@
 import Image from "next/image";
 import styles from "./page.module.css";
 
-const testfetch = async () => {
-  try {
-    console.log("fetching");
-    const response = await fetch("http://backend:8000/test");
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
-    }
-    const data = await response.json();
-    console.log(data);
-  } catch (error) {
-    console.error("Unable to connect to the database:", error);
-  }
-};
-
-export default async function Home() {
-  await testfetch();
-
+export default function Home() {
   return (
     <div className={styles.page}>
       <main className={styles.main}>
