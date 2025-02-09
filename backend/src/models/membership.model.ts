@@ -9,20 +9,14 @@ const Membership = sequelize.define(
       autoIncrement: true,
       primaryKey: true,
     },
-    userId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: { model: "Users", key: "id" },
-    },
-    organizationId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: { model: "Organizations", key: "id" },
-    },
     role: {
       type: DataTypes.ENUM("admin", "member"),
       allowNull: false,
       defaultValue: "member",
+    },
+    xp: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
     },
   },
   {

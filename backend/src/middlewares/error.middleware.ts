@@ -19,9 +19,13 @@ const handleAxiosError = (
   res.status(statusCode).json(jsonResponse);
 };
 
-const developmentError = (err: CustomError | AxiosError, res: Response) => {
-  logger.error(`${err}`);
-
+const developmentError = (
+  err:
+    | CustomError
+    | AxiosError
+    | (Error & { status: string; statusCode: number; isOperational?: boolean }),
+  res: Response,
+) => {
   if (axios.isAxiosError(err)) {
     return handleAxiosError(err, res);
   }
@@ -34,11 +38,15 @@ const developmentError = (err: CustomError | AxiosError, res: Response) => {
   });
 };
 
-const productionError = (err: CustomError | AxiosError, res: Response) => {
-  logger.error(`${err}`);
-
+const productionError = (
+  err:
+    | CustomError
+    | AxiosError
+    | (Error & { status: string; statusCode: number; isOperational?: boolean }),
+  res: Response,
+) => {
   if (axios.isAxiosError(err)) {
-    return handleAxiosError(err, res);
+    return handleAxiosError(err, res, true);
   }
 
   if (err.isOperational) {
@@ -47,31 +55,39 @@ const productionError = (err: CustomError | AxiosError, res: Response) => {
       .json({ status: err.status, message: err.message });
   } else {
     res.status(500).json({
-      status: "error",
+      status: err.status,
       message: "Something went wrong!",
     });
   }
 };
 
 export const errorMiddleware = (
-  err: CustomError | Error | AxiosError,
+  err:
+    | CustomError
+    | (Error & {
+        status: string;
+        statusCode: number;
+        isOperational?: boolean;
+      })
+    | AxiosError,
   req: Request,
   res: Response,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   next: NextFunction,
 ) => {
-  const error =
-    err instanceof CustomError
-      ? err
-      : axios.isAxiosError(err)
-        ? err
-        : new CustomError(err.message, 500, false);
-
-  if (process.env.NODE_ENV === "development") {
-    return developmentError(error, res);
+  if (!axios.isAxiosError(err)) {
+    err.statusCode = err.statusCode || 500;
+    err.status = err.status || "error";
   }
 
-  productionError(error, res);
+  logger.error(`${err}`);
+
+  if (process.env.NODE_ENV === "development") {
+    return developmentError(err, res);
+  }
+
+  productionError(err, res);
+
+  next();
 };
 
 export default errorMiddleware;

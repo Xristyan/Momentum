@@ -1,5 +1,26 @@
-import { DataTypes } from "sequelize";
+import { CreationOptional, DataTypes, Model } from "sequelize";
+
 import sequelize from "../config/database";
+import { hash } from "../utils/passwordHashing";
+
+type UserAttributes = {
+  id?: number;
+  name: string;
+  email: string;
+  password: string;
+};
+
+// we're telling the Model that 'id' is optional
+// when creating an instance of the model (such as using Model.create()).
+
+export class UserInstance extends Model<UserAttributes> {
+  declare id: CreationOptional<number>;
+  declare name: string;
+  declare email: string;
+  declare password: string;
+
+  public declare addOrganization: (model: Model, options: unknown) => void;
+}
 
 const User = sequelize.define(
   "User",
@@ -12,7 +33,18 @@ const User = sequelize.define(
     email: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: true,
+      unique: {
+        name: "users_email",
+        msg: "Email address already exists",
+      },
+      validate: {
+        isEmail: {
+          msg: "Invalid email address",
+        },
+        notEmpty: {
+          msg: "Email address is required",
+        },
+      },
     },
     name: {
       type: DataTypes.STRING,
@@ -20,10 +52,38 @@ const User = sequelize.define(
     },
     password: {
       type: DataTypes.STRING,
+
       allowNull: false,
+      // validate: {
+      //   isValidPassword(value: string) {
+      //     const passwordRegex =
+      //       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&.,])[A-Za-z\d@$!%*?&.,]{8,}$/;
+      //     if (!passwordRegex.test(value)) {
+      //       throw new Error(
+      //         "Password must be at least 8 characters long, include at least one uppercase letter, one lowercase letter, one number, and one special character.",
+      //       );
+      //     }
+      //   },
+      // },
     },
   },
   {
+    hooks: {
+      beforeCreate: async (user: UserInstance) => {
+        if (user.password) {
+          const password = await hash(user.password);
+          user.password = password;
+        }
+      },
+      beforeUpdate: async (user) => {
+        if (user.password) {
+          // user.password = bcrypt.hashSync(user.password, salt);
+        }
+      },
+    },
+    defaultScope: {
+      attributes: { exclude: ["password"] },
+    },
     tableName: "Users",
     timestamps: false,
   },
