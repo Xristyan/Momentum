@@ -5,9 +5,12 @@ import { hash } from "../utils/passwordHashing";
 
 type UserAttributes = {
   id?: number;
-  name: string;
+  name?: string;
   email: string;
   password: string;
+  googleId?: string;
+  picture?: string;
+  isVerified?: boolean;
 };
 
 // we're telling the Model that 'id' is optional
@@ -15,9 +18,12 @@ type UserAttributes = {
 
 export class UserInstance extends Model<UserAttributes> {
   declare id: CreationOptional<number>;
-  declare name: string;
+  declare name: CreationOptional<string>;
   declare email: string;
   declare password: string;
+  declare googleId: CreationOptional<string>;
+  declare picture: CreationOptional<string>;
+  declare isVerified: CreationOptional<boolean>;
 
   public declare addOrganization: (model: Model, options: unknown) => void;
 }
@@ -48,12 +54,20 @@ const User = sequelize.define(
     },
     name: {
       type: DataTypes.STRING,
-      allowNull: false,
     },
+    googleId: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    isVerified: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+    },
+
     password: {
       type: DataTypes.STRING,
-
-      allowNull: false,
+      allowNull: true, // Allow null for Google OAuth users
       // validate: {
       //   isValidPassword(value: string) {
       //     const passwordRegex =
@@ -65,6 +79,10 @@ const User = sequelize.define(
       //     }
       //   },
       // },
+    },
+    picture: {
+      type: DataTypes.STRING,
+      allowNull: true,
     },
   },
   {
@@ -85,7 +103,7 @@ const User = sequelize.define(
       attributes: { exclude: ["password"] },
     },
     tableName: "Users",
-    timestamps: false,
+    timestamps: true,
   },
 );
 

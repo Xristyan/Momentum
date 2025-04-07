@@ -1,5 +1,5 @@
 import { CustomError } from "../error/error";
-import { User } from "../models";
+import { Organization, User } from "../models";
 import { catchAsync } from "../utils/catchAsync";
 import { verifyToken } from "../utils/jwt";
 
@@ -15,7 +15,9 @@ export const authMiddleware = catchAsync(async (req, res, next) => {
 
   const decoded = await verifyToken(token);
 
-  const user = await User.findByPk(decoded.id);
+  const user = await User.findByPk(decoded.id, {
+    include: Organization,
+  });
 
   if (!user) {
     return next(new CustomError("User not found", 404));

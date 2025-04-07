@@ -14,6 +14,10 @@ const Organization = sequelize.define(
       allowNull: false,
       unique: true,
     },
+    technologies: {
+      type: DataTypes.ARRAY(DataTypes.STRING),
+      allowNull: true,
+    },
     description: {
       type: DataTypes.TEXT,
       allowNull: true,

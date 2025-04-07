@@ -12,16 +12,26 @@ import "./models";
 //Middleware
 import morganMiddleware from "./middlewares/morgan.middleware";
 import errorMiddleware from "./middlewares/error.middleware";
+import cors from "cors";
+import cookieParser from "cookie-parser";
 
 //Routes
 import notFoundRouter from "./routes/notFound.route";
 import userRouter from "./routes/user.route";
 import authRouter from "./routes/auth.route";
 import organizationRouter from "./routes/organization.route";
+import technologiesRouter from "./routes/technologies.route";
 
 const app = express();
 const port = process.env.PORT;
 
+app.use(
+  cors({
+    origin: ["http://localhost:3000", "http://frontend:3000"],
+    credentials: true,
+  }),
+);
+app.use(cookieParser());
 app.use(helmet());
 app.use(morganMiddleware);
 app.use(limiter);
@@ -32,8 +42,8 @@ app.use(hpp());
 app.use("/auth", authRouter);
 app.use(userRouter);
 app.use(organizationRouter);
+app.use(technologiesRouter);
 app.use(notFoundRouter);
-
 app.use(errorMiddleware);
 
 process.on(
