@@ -15,6 +15,7 @@ export const useAuth = () => {
     onOpen();
 
     await logout();
+
     queryClient.setQueryData(['user'], null);
 
     router.push('/');
@@ -25,11 +26,15 @@ export const useAuth = () => {
   const loginHandler = async (values: z.infer<typeof loginSchema>) => {
     const action = await signIn(values);
 
+    queryClient.invalidateQueries({ queryKey: ['user'] });
+
     return action;
   };
 
   const signupHandler = async (values: z.infer<typeof registerSchema>) => {
     const action = await signUp(values);
+
+    queryClient.invalidateQueries({ queryKey: ['user'] });
 
     return action;
   };

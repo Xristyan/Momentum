@@ -28,17 +28,12 @@ import {
 } from '../ui/form';
 import { FormField } from '../ui/form';
 import clsx from 'clsx';
-
-const createOrganizationSchema = z.object({
-  name: z.string().min(1, 'Name is required'),
-  description: z.string(),
-  technologies: z
-    .array(z.string())
-    .min(1, 'At least one technology is required'),
-});
+import { createOrganizationSchema } from '@/lib/schemas/organizationSchema';
+import { useCreateOrganization } from '@/hooks/organizationHooks/organizationHooks';
 
 export const CreateOrganizationDialog = () => {
   const [open, setOpen] = useState(false);
+  const { createOrganization, isPending } = useCreateOrganization();
 
   const form = useForm<z.infer<typeof createOrganizationSchema>>({
     resolver: zodResolver(createOrganizationSchema),
@@ -50,7 +45,13 @@ export const CreateOrganizationDialog = () => {
   });
 
   const onSubmit = async (data: z.infer<typeof createOrganizationSchema>) => {
-    console.log(data);
+    const action = await createOrganization(data);
+
+    if (!action.success) {
+      return;
+    }
+    setOpen(false);
+    form.reset();
   };
 
   return (
@@ -142,11 +143,8 @@ export const CreateOrganizationDialog = () => {
           >
             Cancel
           </Button>
-          <Button
-            onClick={form.handleSubmit(onSubmit)}
-            disabled={form.formState.isSubmitting}
-          >
-            {form.formState.isSubmitting ? (
+          <Button onClick={form.handleSubmit(onSubmit)} disabled={isPending}>
+            {isPending ? (
               <>
                 <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"></div>
                 Creating...

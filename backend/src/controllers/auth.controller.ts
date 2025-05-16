@@ -90,8 +90,6 @@ export const Login = catchAsync(async (req, res, next) => {
 });
 
 export const AuthMe = catchAsync(async (req, res) => {
-  console.log("req.user", req.user.toJSON());
-
   const user = req.user.toJSON();
   res.json({ data: user });
 });

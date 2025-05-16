@@ -8,10 +8,23 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Building2, ChevronRight, Users } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { useRouter } from 'next/navigation';
+import { Building2, ChevronRight, Users, Trash2 } from 'lucide-react';
 import { FaJira, FaGithub, FaSlack, FaMicrosoft } from 'react-icons/fa';
+import Link from 'next/link';
+import { Button } from '../ui/button';
+import { useDeleteOrganization } from '@/hooks/organizationHooks/organizationHooks';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
+import { useState } from 'react';
 
 type TechIconProps = {
   tech: string;
@@ -45,7 +58,16 @@ type OrganizationCardProps = {
 };
 
 export const OrganizationCard = ({ organization }: OrganizationCardProps) => {
-  const router = useRouter();
+  const { deleteOrganization, isPending } = useDeleteOrganization();
+  const [open, setOpen] = useState(false);
+
+  const handleDelete = () => {
+    deleteOrganization(organization.id, {
+      onSuccess: () => {
+        setOpen(false);
+      },
+    });
+  };
 
   return (
     <Card className="overflow-hidden transition-all hover:shadow-md dark:bg-[#111530] dark:hover:shadow-indigo-900/20">
@@ -91,15 +113,44 @@ export const OrganizationCard = ({ organization }: OrganizationCardProps) => {
         )}
       </CardContent>
 
-      <CardFooter className="pt-2">
-        <Button
-          variant="ghost"
-          className="ml-auto flex items-center gap-1 text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300"
-          onClick={() => router.push(`/organizations/${organization.id}`)}
+      <CardFooter className="flex justify-between pt-2">
+        {organization.role === 'admin' && (
+          <AlertDialog open={open} onOpenChange={setOpen}>
+            <AlertDialogTrigger asChild>
+              <Button variant="destructive" size="sm" className="px-2">
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This will permanently delete the &quot;{organization.name}
+                  &quot; organization and all of its data. This action cannot be
+                  undone.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={handleDelete}
+                  disabled={isPending}
+                  className="bg-red-600 hover:bg-red-700"
+                >
+                  {isPending ? 'Deleting...' : 'Delete Organization'}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        )}
+        <Link
+          target="_blank"
+          className="ml-auto flex items-center gap-1 rounded-sm px-2 py-1 text-indigo-600 hover:bg-accent hover:text-accent-foreground hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300"
+          href={`/dashboard/${organization.id}`}
         >
           View
           <ChevronRight className="h-4 w-4" />
-        </Button>
+        </Link>
       </CardFooter>
     </Card>
   );

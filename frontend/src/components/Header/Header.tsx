@@ -18,6 +18,8 @@ export function Header() {
   const { user } = useUser();
   const { logoutHandler } = useAuth();
 
+  console.log('user hader', user);
+
   return (
     <header className="fixed top-0 z-50 h-[75px] w-full">
       <div className="relative mx-auto flex max-w-7xl items-center justify-between border-b bg-background px-4 pb-2 pt-3 sm:px-6 lg:px-8">

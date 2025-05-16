@@ -67,18 +67,18 @@ const User = sequelize.define(
 
     password: {
       type: DataTypes.STRING,
-      allowNull: true, // Allow null for Google OAuth users
-      // validate: {
-      //   isValidPassword(value: string) {
-      //     const passwordRegex =
-      //       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&.,])[A-Za-z\d@$!%*?&.,]{8,}$/;
-      //     if (!passwordRegex.test(value)) {
-      //       throw new Error(
-      //         "Password must be at least 8 characters long, include at least one uppercase letter, one lowercase letter, one number, and one special character.",
-      //       );
-      //     }
-      //   },
-      // },
+      allowNull: true,
+      validate: {
+        isValidPassword(value: string) {
+          const passwordRegex =
+            /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&.,])[A-Za-z\d@$!%*?&.,]{8,}$/;
+          if (!passwordRegex.test(value)) {
+            throw new Error(
+              "Password must be at least 8 characters long, include at least one uppercase letter, one lowercase letter, one number, and one special character.",
+            );
+          }
+        },
+      },
     },
     picture: {
       type: DataTypes.STRING,
@@ -95,12 +95,13 @@ const User = sequelize.define(
       },
       beforeUpdate: async (user) => {
         if (user.password) {
-          // user.password = bcrypt.hashSync(user.password, salt);
+          const password = await hash(user.password);
+          user.password = password;
         }
       },
     },
     defaultScope: {
-      attributes: { exclude: ["password"] },
+      attributes: { exclude: ["password", "googleId"] },
     },
     tableName: "Users",
     timestamps: true,

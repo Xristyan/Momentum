@@ -2,9 +2,12 @@
 
 import { cookies } from 'next/headers';
 import { z } from 'zod';
-import { decode } from 'jsonwebtoken';
 import { RequestMethodsEnum } from '@/types/actions';
-import { extractAndSetJWTCookie, fetchApi } from '@/lib/helpers/actionHelpers';
+import {
+  extractAndSetJWTCookie,
+  fetchApi,
+  getTokenFromCookie,
+} from '@/lib/helpers/actionHelpers';
 import { loginSchema } from '@/lib/schemas/loginSchema';
 import { validateSchema } from '@/lib/helpers/schemaHelpers';
 import { registerSchema } from '@/lib/schemas/registerSchema';
@@ -65,20 +68,9 @@ export const signUp = async (formData: z.infer<typeof registerSchema>) => {
 export const fetchUserFromSession = async (): Promise<
   UserData | null | undefined
 > => {
-  const cookieStore = await cookies();
-  const jwt = cookieStore.get('jwt');
+  const jwt = await getTokenFromCookie();
 
   if (!jwt) {
-    return null;
-  }
-  const token = decode(jwt.value);
-
-  if (
-    typeof token === 'object' &&
-    token &&
-    token.exp &&
-    Date.now() >= token.exp * 1000
-  ) {
     return null;
   }
 

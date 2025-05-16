@@ -1,15 +1,16 @@
 'use client';
 import { fetchUserFromSession } from '@/actions/authActions';
 import { useQuery } from '@tanstack/react-query';
-import { createContext, ReactNode, useContext } from 'react';
+import { createContext, useContext } from 'react';
 import type { FC } from 'react';
-type PropsWithChildren<T> = T & { children?: ReactNode };
+import type { PropsWithChildren } from '@/types/common';
 
 interface UserData {
   data: {
     id: number;
     name?: string;
     email: string;
+    picture?: string;
     Organizations?: Array<{
       id: number;
       name: string;
@@ -36,6 +37,9 @@ export const UserProvider: FC<
     queryKey: ['user'],
     initialData: initialUser,
     queryFn: fetchUserFromSession,
+    staleTime: 0,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
   });
 
   const isLoading = isUserLoading;

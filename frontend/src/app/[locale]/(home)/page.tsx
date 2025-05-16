@@ -7,7 +7,7 @@ import {
   CarouselItem,
 } from '@/components/ui/carousel';
 import Link from 'next/link';
-
+import { Icon } from '@/components/Icon/Icon';
 export default async function Home() {
   return (
     <section className="flex max-w-[76.5rem] flex-col items-center pt-8 font-[family-name:var(--font-geist-sans)] lg:pt-16">
@@ -73,11 +73,11 @@ export default async function Home() {
                     key={index}
                     className="rounded border border-[#282D45] bg-[#0E1330] py-[30px] pl-[30px] pr-[40px]"
                   >
-                    <Image
-                      src="/icons/community.svg"
+                    <Icon
+                      iconName="community"
+                      alt="Community"
                       width={45}
                       height={45}
-                      alt=""
                       className="pb-[30px]"
                     />
                     <div className="flex flex-col gap-3">
@@ -101,11 +101,11 @@ export default async function Home() {
                 key={index}
                 className="rounded border border-[#282D45] bg-[#0E1330] py-[30px] pl-[30px] pr-[40px]"
               >
-                <Image
-                  src="/icons/community.svg"
+                <Icon
+                  iconName="community"
+                  alt="Community"
                   width={45}
                   height={45}
-                  alt=""
                   className="pb-[30px]"
                 />
                 <div className="flex flex-col gap-3">

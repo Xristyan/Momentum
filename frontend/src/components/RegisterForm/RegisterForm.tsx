@@ -66,13 +66,10 @@ export const RegisterForm = () => {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-[#0A0F1F] to-[#1a1f3d] p-4">
-      <div className="flex w-full max-w-5xl overflow-hidden rounded-2xl shadow-2xl">
+    <div className="relative z-[1000] flex max-w-5xl items-center justify-center bg-gradient-to-br from-[#0A0F1F] to-[#1a1f3d] p-4">
+      <div className="relative z-[1000] flex w-full overflow-hidden rounded-2xl shadow-2xl">
         {/* Left side: Hero image */}
-        <div
-          className="hidden w-1/2 bg-cover bg-center md:block"
-          style={{ backgroundImage: "url('/images/auth-background.jpg')" }}
-        >
+        <div className="hidden w-1/2 bg-cover bg-center md:block">
           <div className="flex h-full items-center bg-black/40 p-12">
             <div className="max-w-md text-white">
               <h2 className="mb-6 text-3xl font-bold">Join Momentum</h2>
@@ -84,8 +81,8 @@ export const RegisterForm = () => {
         </div>
 
         {/* Right side: Form */}
-        <div className="w-full max-w-md space-y-6 bg-white p-10 dark:bg-[#0E1330] dark:text-white md:p-12">
-          <div className="flex justify-center">
+        <div className="w-full space-y-6 bg-white p-10 dark:bg-[#0E1330] dark:text-white md:p-12 lg:w-1/2">
+          <Link href="/" className="flex justify-center">
             <Image
               src="/images/logos/original.png"
               alt="Momentum Logo"
@@ -93,7 +90,7 @@ export const RegisterForm = () => {
               height={60}
               className="h-auto"
             />
-          </div>
+          </Link>
 
           <div className="space-y-2">
             <h1 className="text-center text-3xl font-bold tracking-tight">
@@ -323,6 +320,8 @@ export const RegisterForm = () => {
           </div>
         </div>
       </div>
+      <div className="absolute -left-48 top-1/4 z-[100] h-[226px] w-[274px] bg-[#7214FF] blur-[250px]"></div>
+      <div className="absolute -right-48 top-1/3 z-[100] h-[226px] w-[274px] bg-[#32CAFD] blur-[250px]"></div>
     </div>
   );
 };

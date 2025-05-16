@@ -35,7 +35,7 @@ app.use(cookieParser());
 app.use(helmet());
 app.use(morganMiddleware);
 app.use(limiter);
-app.use(express.json({ limit: "1000kb" }));
+app.use(express.json({ limit: "3000kb" }));
 app.use(express.urlencoded({ extended: true }));
 app.use(hpp());
 

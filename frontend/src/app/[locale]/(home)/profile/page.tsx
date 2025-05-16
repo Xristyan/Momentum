@@ -11,10 +11,30 @@ import { Building2 } from 'lucide-react';
 import { CreateOrganizationDialog } from '@/components/Organization/CreateOrganizationDialog';
 import { OrganizationCard } from '@/components/Organization/OrganizationCard';
 import { useUser } from '@/providers/userProvider/UserProvider';
+import { UserProfileDialog } from '@/components/User';
+import Avatar from 'boring-avatars';
+import { useState, useEffect } from 'react';
+import Image from 'next/image';
 
 export default function Profile() {
   const { user } = useUser();
   const userData = user?.data ?? null;
+  // Track if component is mounted to avoid hydration errors
+  const [isMounted, setIsMounted] = useState(false);
+  // Track image loading errors
+  const [imageError, setImageError] = useState(false);
+
+  // Only show profile picture after component is mounted on the client
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  // Reset image error when user data changes
+  useEffect(() => {
+    if (userData?.picture) {
+      setImageError(false);
+    }
+  }, [userData]);
 
   console.log('userData', userData);
 
@@ -22,8 +42,43 @@ export default function Profile() {
     <div className="container mx-auto max-w-7xl p-6">
       <div className="mb-8 flex items-center justify-between">
         <h1 className="text-3xl font-bold">Your Profile</h1>
-        <div className="text-lg">
-          {userData?.name && <span>Welcome, {userData.name}</span>}
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
+            <div className="relative h-10 w-10 overflow-hidden rounded-full">
+              {isMounted && (
+                <>
+                  {userData?.picture && !imageError ? (
+                    <Image
+                      src={userData.picture}
+                      alt={userData.name || 'Profile picture'}
+                      fill
+                      sizes="40px"
+                      className="object-cover"
+                      priority
+                      onError={() => setImageError(true)}
+                    />
+                  ) : userData?.email ? (
+                    <Avatar
+                      size={40}
+                      name={userData.email}
+                      variant="beam"
+                      colors={[
+                        '#92A1C6',
+                        '#146A7C',
+                        '#F0AB3D',
+                        '#C271B4',
+                        '#C20D90',
+                      ]}
+                    />
+                  ) : null}
+                </>
+              )}
+            </div>
+            {userData?.name && (
+              <span className="text-lg">Welcome, {userData.name}</span>
+            )}
+          </div>
+          <UserProfileDialog />
         </div>
       </div>
 

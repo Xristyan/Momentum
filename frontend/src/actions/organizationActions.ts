@@ -1,139 +1,100 @@
-// 'use server';
+'use server';
 
-// import { cookies } from 'next/headers';
-// import { z } from 'zod';
+import { validateSchema } from '@/lib/helpers/schemaHelpers';
+import { createOrganizationSchema } from '@/lib/schemas/organizationSchema';
+import { z } from 'zod';
+import {
+  fetchApi,
+  formatResponse,
+  getTokenFromCookie,
+} from '@/lib/helpers/actionHelpers';
+import { RequestMethodsEnum } from '@/types/actions';
+import { Organization } from '@/types/organizations';
 
-// enum RequestMethodsEnum {
-//   GET = 'GET',
-//   POST = 'POST',
-//   PUT = 'PUT',
-//   DELETE = 'DELETE',
-// }
+export const createOrganization = async (
+  formData: z.infer<typeof createOrganizationSchema>,
+) => {
+  const jwt = await getTokenFromCookie();
 
-// // Organization creation schema
-// export const createOrgSchema = z.object({
-//   name: z.string().min(1, 'Organization name is required'),
-//   description: z.string().optional(),
-//   technologies: z
-//     .array(z.string())
-//     .min(1, 'At least one technology must be selected'),
-// });
+  if (!jwt) {
+    return { success: false, message: 'Unauthorized' };
+  }
 
-// export type CreateOrgInput = z.infer<typeof createOrgSchema>;
+  const validationResult = validateSchema(createOrganizationSchema, formData);
 
-// // Organization type
-// export interface Organization {
-//   id: number;
-//   name: string;
-//   description?: string;
-//   technologies?: string[];
-//   createdAt?: string;
-//   updatedAt?: string;
-//   Users?: Array<{
-//     id: number;
-//     name?: string;
-//     email: string;
-//     Membership: {
-//       role: string;
-//     };
-//   }>;
-// }
+  if (!validationResult.success) {
+    return { success: false, errors: validationResult.errors };
+  }
 
-// async function fetchApi<T extends Record<string, unknown>>(
-//   url: string,
-//   options: {
-//     method: RequestMethodsEnum;
-//     headers?: Record<string, string>;
-//     credentials?: RequestCredentials;
-//     body?: Record<string, unknown>;
-//   },
-// ): Promise<{ data?: T; error?: string }> {
-//   try {
-//     const response = await fetch(url, {
-//       method: options.method,
-//       headers: {
-//         'Content-Type': 'application/json',
-//         ...options.headers,
-//       },
-//       credentials: options.credentials,
-//       ...(options.body ? { body: JSON.stringify(options.body) } : {}),
-//     });
+  const response = await fetchApi(
+    `${process.env.BACKEND_URL_DOCKER}/organizations`,
+    {
+      method: RequestMethodsEnum.POST,
+      credentials: 'include',
+      body: {
+        name: validationResult.data.name,
+        description: validationResult.data.description,
+        technologies: validationResult.data.technologies,
+      },
+      headers: {
+        Authorization: `Bearer ${jwt.value}`,
+      },
+    },
+  );
 
-//     if (!response.ok) {
-//       const errorData = await response.json().catch(() => ({}));
-//       return {
-//         error:
-//           errorData?.message || `Request failed with status ${response.status}`,
-//       };
-//     }
+  return formatResponse(response);
+};
 
-//     const data = (await response.json()) as T;
-//     return { data };
-//   } catch (error) {
-//     const errorMessage =
-//       error instanceof Error ? error.message : 'An unknown error occurred';
-//     console.error('API request failed:', errorMessage);
-//     return { error: errorMessage };
-//   }
-// }
+export const getOrganization = async (
+  id: number | null,
+): Promise<Organization | null | undefined> => {
+  if (!id) {
+    return null;
+  }
 
-// export const fetchUserOrganizations = async (): Promise<{
-//   success: boolean;
-//   data?: Organization[];
-//   error?: string;
-// }> => {
-//   const cookieStore = await cookies();
-//   const jwt = cookieStore.get('jwt');
+  const jwt = await getTokenFromCookie();
 
-//   if (!jwt) {
-//     return { success: false, error: 'Not authenticated' };
-//   }
+  if (!jwt) {
+    return null;
+  }
 
-//   const { data, error } = await fetchApi<{ data: Organization[] }>(
-//     'http://backend:8000/organizations',
-//     {
-//       method: RequestMethodsEnum.GET,
-//       headers: {
-//         Authorization: `Bearer ${jwt.value}`,
-//       },
-//     },
-//   );
+  const { data, error } = await fetchApi<Organization>(
+    `${process.env.BACKEND_URL_DOCKER}/organizations/${id}`,
+    {
+      method: RequestMethodsEnum.GET,
+      credentials: 'include',
+      headers: {
+        Authorization: `Bearer ${jwt.value}`,
+      },
+    },
+  );
 
-//   if (error) {
-//     return { success: false, error };
-//   }
+  if (error) {
+    return null;
+  }
 
-//   return { success: true, data: data?.data };
-// };
+  return data;
+};
 
-// export const createOrganization = async (
-//   formData: CreateOrgInput,
-// ): Promise<{
-//   success: boolean;
-//   data?: { organization: Organization };
-//   error?: string;
-// }> => {
-//   const cookieStore = await cookies();
-//   const jwt = cookieStore.get('jwt');
+// const updateOrganization = () => {};
 
-//   if (!jwt) {
-//     return { success: false, error: 'Not authenticated' };
-//   }
+export const deleteOrganization = async (organizationId: number) => {
+  const jwt = await getTokenFromCookie();
 
-//   const { data, error } = await fetchApi<{ organization: Organization }>(
-//     'http://backend:8000/organizations',
-//     {
-//       method: RequestMethodsEnum.POST,
-//       headers: {
-//         Authorization: `Bearer ${jwt.value}`,
-//       },
-//       body: formData,
-//     },
-//   );
+  if (!jwt) {
+    return { success: false, message: 'Unauthorized' };
+  }
 
-//   if (error) {
-//     return { success: false, error };
-//   }
+  const response = await fetchApi(
+    `${process.env.BACKEND_URL_DOCKER}/organizations/${organizationId}`,
+    {
+      method: RequestMethodsEnum.DELETE,
+      credentials: 'include',
+      headers: {
+        Authorization: `Bearer ${jwt.value}`,
+      },
+    },
+  );
 
-//   return { success: true, data };
-// };
+  return formatResponse(response);
+};
