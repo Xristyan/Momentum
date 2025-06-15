@@ -125,11 +125,11 @@ const chartConfig = {
   },
   desktop: {
     label: 'Desktop',
-    color: 'hsl(var(--chart-1))',
+    color: '#7214FF',
   },
   mobile: {
     label: 'Mobile',
-    color: 'hsl(var(--chart-2))',
+    color: '#32CAFD',
   },
 } satisfies ChartConfig;
 
@@ -151,73 +151,73 @@ export function ChartThree() {
   });
 
   return (
-    <Card className="col-span-2">
-      <CardHeader className="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
+    <Card className="col-span-2 border-[#282D45] bg-[#0E1330] transition-all duration-300 hover:border-[#7214FF]/50">
+      <CardHeader className="flex items-center gap-2 space-y-0 border-b border-[#282D45] py-6 sm:flex-row">
         <div className="grid flex-1 gap-1 text-center sm:text-left">
-          <CardTitle>Area Chart - Interactive</CardTitle>
-          <CardDescription>
-            Showing total visitors for the last 3 months
+          <CardTitle className="bg-gradient-to-b from-[#F6F6F7] to-[#7E808F] bg-clip-text text-xl font-semibold text-transparent">
+            Interactive Analytics
+          </CardTitle>
+          <CardDescription className="text-gray-400">
+            Comprehensive visitor tracking over time with customizable periods
           </CardDescription>
         </div>
         <Select value={timeRange} onValueChange={setTimeRange}>
           <SelectTrigger
-            className="w-[160px] rounded-lg sm:ml-auto"
+            className="w-[160px] rounded-lg border-[#282D45] bg-[#1A1F3A] text-gray-200 sm:ml-auto"
             aria-label="Select a value"
           >
             <SelectValue placeholder="Last 3 months" />
           </SelectTrigger>
-          <SelectContent className="rounded-xl">
-            <SelectItem value="90d" className="rounded-lg">
+          <SelectContent className="rounded-xl border-[#282D45] bg-[#1A1F3A]">
+            <SelectItem
+              value="90d"
+              className="rounded-lg text-gray-200 focus:bg-[#7214FF] focus:text-white"
+            >
               Last 3 months
             </SelectItem>
-            <SelectItem value="30d" className="rounded-lg">
+            <SelectItem
+              value="30d"
+              className="rounded-lg text-gray-200 focus:bg-[#7214FF] focus:text-white"
+            >
               Last 30 days
             </SelectItem>
-            <SelectItem value="7d" className="rounded-lg">
+            <SelectItem
+              value="7d"
+              className="rounded-lg text-gray-200 focus:bg-[#7214FF] focus:text-white"
+            >
               Last 7 days
             </SelectItem>
           </SelectContent>
         </Select>
       </CardHeader>
-      <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
+      <CardContent className="px-6 py-6">
         <ChartContainer
           config={chartConfig}
-          className="aspect-auto h-[250px] w-full"
+          className="aspect-auto h-[300px] w-full"
         >
           <AreaChart data={filteredData}>
             <defs>
               <linearGradient id="fillDesktop" x1="0" y1="0" x2="0" y2="1">
-                <stop
-                  offset="5%"
-                  stopColor="var(--color-desktop)"
-                  stopOpacity={0.8}
-                />
-                <stop
-                  offset="95%"
-                  stopColor="var(--color-desktop)"
-                  stopOpacity={0.1}
-                />
+                <stop offset="5%" stopColor="#7214FF" stopOpacity={0.8} />
+                <stop offset="95%" stopColor="#7214FF" stopOpacity={0.1} />
               </linearGradient>
               <linearGradient id="fillMobile" x1="0" y1="0" x2="0" y2="1">
-                <stop
-                  offset="5%"
-                  stopColor="var(--color-mobile)"
-                  stopOpacity={0.8}
-                />
-                <stop
-                  offset="95%"
-                  stopColor="var(--color-mobile)"
-                  stopOpacity={0.1}
-                />
+                <stop offset="5%" stopColor="#32CAFD" stopOpacity={0.8} />
+                <stop offset="95%" stopColor="#32CAFD" stopOpacity={0.1} />
               </linearGradient>
             </defs>
-            <CartesianGrid vertical={false} />
+            <CartesianGrid
+              vertical={false}
+              stroke="#282D45"
+              strokeOpacity={0.5}
+            />
             <XAxis
               dataKey="date"
               tickLine={false}
               axisLine={false}
               tickMargin={8}
               minTickGap={32}
+              tick={{ fill: '#7E808F', fontSize: 12 }}
               tickFormatter={(value) => {
                 const date = new Date(value);
                 return date.toLocaleDateString('en-US', {
@@ -237,6 +237,7 @@ export function ChartThree() {
                     });
                   }}
                   indicator="dot"
+                  className="border-[#282D45] bg-[#1A1F3A]"
                 />
               }
             />
@@ -244,17 +245,21 @@ export function ChartThree() {
               dataKey="mobile"
               type="natural"
               fill="url(#fillMobile)"
-              stroke="var(--color-mobile)"
+              stroke="#32CAFD"
+              strokeWidth={2}
               stackId="a"
             />
             <Area
               dataKey="desktop"
               type="natural"
               fill="url(#fillDesktop)"
-              stroke="var(--color-desktop)"
+              stroke="#7214FF"
+              strokeWidth={2}
               stackId="a"
             />
-            <ChartLegend content={<ChartLegendContent />} />
+            <ChartLegend
+              content={<ChartLegendContent className="text-gray-300" />}
+            />
           </AreaChart>
         </ChartContainer>
       </CardContent>

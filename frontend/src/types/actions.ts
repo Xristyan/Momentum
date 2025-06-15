@@ -6,3 +6,9 @@ export enum RequestMethodsEnum {
   PUT = 'PUT',
   DELETE = 'DELETE',
 }
+
+export type ActionResponse = {
+  success: boolean;
+  data?: unknown;
+  message?: string;
+};

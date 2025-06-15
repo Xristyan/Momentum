@@ -70,6 +70,10 @@ const User = sequelize.define(
       allowNull: true,
       validate: {
         isValidPassword(value: string) {
+          if (this.googleId) {
+            return;
+          }
+
           const passwordRegex =
             /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&.,])[A-Za-z\d@$!%*?&.,]{8,}$/;
           if (!passwordRegex.test(value)) {

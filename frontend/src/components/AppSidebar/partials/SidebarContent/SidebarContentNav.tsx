@@ -80,7 +80,7 @@ export function SidebarContentNav({
   );
 
   return (
-    <SidebarContent className="pt-2 dark:bg-background">
+    <SidebarContent className="pt-2">
       <NavGroup title="Dashboard" routes={routes} />
       <NavGroup title="Technologies" routes={dynamicRoutes} />
     </SidebarContent>

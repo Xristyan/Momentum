@@ -12,8 +12,6 @@ export const formHandlerAction = async (
 ): Promise<NewsletterActionResponse> => {
   const validated = newsletterSchema.safeParse(data);
 
-  console.log(validated);
-
   if (!validated.success) {
     const errors = validated.error.issues.reduce(
       (acc: { [key: string]: string }, issue: IssueData) => {

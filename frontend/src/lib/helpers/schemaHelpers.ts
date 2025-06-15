@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 export function validateSchema<T extends z.ZodTypeAny>(
-  schema: T,
+  schema: z.ZodTypeAny,
   data: unknown,
 ):
   | { success: true; data: z.infer<T> }

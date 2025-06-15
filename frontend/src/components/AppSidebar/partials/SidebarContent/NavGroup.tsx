@@ -19,8 +19,6 @@ export const NavGroup = ({
 }) => {
   const pathname = usePathname();
 
-  console.log('routes', routes);
-  console.log('pathname', pathname);
   return (
     <SidebarGroup>
       <SidebarGroupLabel className="text-sm font-medium tracking-wider text-gray-500">

@@ -1,100 +1,155 @@
-import { getOrganization } from '@/actions/organizationActions';
+'use client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
+import { useOrganization } from '@/providers/organizationProvider';
 import Image from 'next/image';
-import { InviteUserDialog } from '@/components/User';
+import { InviteUserDialog } from '@/components/InviteUserDialog';
+import { UserData } from '@/types/user';
 
-interface User {
-  id: number;
-  email: string;
-  name: string;
-  isVerified: boolean;
-  picture: string;
-  createdAt: string;
-  updatedAt: string;
-  Membership: {
-    id: number;
-    role: string;
-    xp: number;
-    UserId: number;
-    OrganizationId: number;
-  };
-}
-
-interface ExtendedOrganization {
-  id: number;
-  name: string;
-  description: string;
-  technologies: string[];
-  Users: User[];
-}
-
-export default async function UsersPage({
-  params,
-}: {
-  params: { orgId: string };
-}) {
-  const organizationId = parseInt(params.orgId, 10);
-  const organization = (await getOrganization(
-    organizationId,
-  )) as unknown as ExtendedOrganization;
+export default function UsersPage() {
+  const { organization } = useOrganization();
 
   if (!organization) {
-    return <div className="p-6">Organization not found</div>;
+    return (
+      <div className="flex min-h-[400px] items-center justify-center">
+        <div className="text-center">
+          <h2 className="bg-gradient-to-b from-[#F6F6F7] to-[#7E808F] bg-clip-text text-2xl font-bold text-transparent">
+            Organization not found
+          </h2>
+          <p className="mt-2 text-gray-400">
+            Please check your organization settings
+          </p>
+        </div>
+      </div>
+    );
   }
 
-  const users = organization.Users || [];
+  const users = (organization.Users || []) as unknown as UserData['data'][];
 
   return (
-    <div className="space-y-6 p-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Organization Members</h1>
-        <InviteUserDialog organizationId={organizationId} />
+    <div className="space-y-8">
+      {/* Header Section */}
+      <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="bg-gradient-to-b from-[#F6F6F7] to-[#7E808F] bg-clip-text text-3xl font-bold text-transparent lg:text-4xl">
+            Team Members
+          </h1>
+          <p className="mt-2 text-lg text-gray-400">
+            Manage your organization members and their permissions
+          </p>
+        </div>
+        <InviteUserDialog organizationId={organization.id.toString()} />
       </div>
 
-      <Card className="border-[#282D45] dark:bg-[#0E1330]">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-xl">
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+        <div className="rounded-lg border border-[#282D45] bg-[#0E1330] p-6 transition-all duration-300 hover:border-[#32CAFD] hover:bg-[#1A1F3A]">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-semibold text-gray-200">
+              Total Members
+            </h3>
+            <div className="h-3 w-3 rounded-full bg-[#32CAFD]"></div>
+          </div>
+          <p className="mt-2 text-3xl font-bold text-[#32CAFD]">
+            {users.length}
+          </p>
+          <p className="text-sm text-gray-400">Active team members</p>
+        </div>
+
+        <div className="rounded-lg border border-[#282D45] bg-[#0E1330] p-6 transition-all duration-300 hover:border-[#7214FF] hover:bg-[#1A1F3A]">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-semibold text-gray-200">
+              Verified Users
+            </h3>
+            <div className="h-3 w-3 rounded-full bg-green-500"></div>
+          </div>
+          <p className="mt-2 text-3xl font-bold text-green-500">
+            {users.filter((user) => user.isVerified).length}
+          </p>
+          <p className="text-sm text-gray-400">Email verified</p>
+        </div>
+
+        <div className="rounded-lg border border-[#282D45] bg-[#0E1330] p-6 transition-all duration-300 hover:border-[#7214FF] hover:bg-[#1A1F3A]">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-semibold text-gray-200">Admins</h3>
+            <div className="h-3 w-3 rounded-full bg-[#7214FF]"></div>
+          </div>
+          <p className="mt-2 text-3xl font-bold text-[#7214FF]">
+            {users.filter((user) => user.Membership?.role === 'admin').length}
+          </p>
+          <p className="text-sm text-gray-400">Administrator roles</p>
+        </div>
+      </div>
+
+      {/* Members Table */}
+      <Card className="border-[#282D45] bg-[#0E1330] transition-all duration-300 hover:border-[#7214FF]/50">
+        <CardHeader className="border-b border-[#282D45] pb-4">
+          <CardTitle className="bg-gradient-to-b from-[#F6F6F7] to-[#7E808F] bg-clip-text text-xl font-semibold text-transparent">
             Members of {organization.name}
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-0">
           {users.length === 0 ? (
-            <div className="py-8 text-center text-gray-500">
-              No users found in this organization
+            <div className="flex min-h-[200px] items-center justify-center">
+              <div className="text-center">
+                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[#1A1F3A]">
+                  <div className="h-8 w-8 rounded-full bg-[#282D45]"></div>
+                </div>
+                <h3 className="text-lg font-medium text-gray-300">
+                  No members found
+                </h3>
+                <p className="text-gray-500">
+                  Invite team members to get started
+                </p>
+              </div>
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full border-collapse">
-                <thead>
+                <thead className="bg-[#1A1F3A]/50">
                   <tr className="border-b border-[#282D45]">
-                    <th className="w-16 px-4 py-3 text-left"></th>
-                    <th className="px-4 py-3 text-left">Name</th>
-                    <th className="px-4 py-3 text-left">Email</th>
-                    <th className="px-4 py-3 text-left">Role</th>
-                    <th className="px-4 py-3 text-left">XP</th>
-                    <th className="px-4 py-3 text-left">Joined</th>
-                    <th className="px-4 py-3 text-left">Status</th>
+                    <th className="w-16 px-6 py-4 text-left"></th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">
+                      Name
+                    </th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">
+                      Email
+                    </th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">
+                      Role
+                    </th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">
+                      XP
+                    </th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">
+                      Joined
+                    </th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">
+                      Status
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
-                  {users.map((user) => (
+                  {users.map((user, index) => (
                     <tr
                       key={user.id}
-                      className="border-b border-[#282D45] hover:bg-[#282D45]/10"
+                      className={cn(
+                        'border-b border-[#282D45] transition-all duration-200 hover:bg-[#1A1F3A]/30',
+                        index % 2 === 0 ? 'bg-transparent' : 'bg-[#1A1F3A]/20',
+                      )}
                     >
-                      <td className="px-4 py-3">
-                        <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full bg-indigo-500 text-white">
-                          {user.picture ? (
+                      <td className="px-6 py-4">
+                        <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-[#7214FF] to-[#32CAFD] text-white">
+                          {user?.picture ? (
                             <Image
                               src={user.picture}
                               alt={user.name || user.email}
                               className="h-full w-full object-cover"
-                              width={40}
-                              height={40}
+                              width={48}
+                              height={48}
                             />
                           ) : (
-                            <span>
+                            <span className="text-sm font-semibold">
                               {user.name
                                 ? user.name.substring(0, 2).toUpperCase()
                                 : user.email.substring(0, 2).toUpperCase()}
@@ -102,33 +157,37 @@ export default async function UsersPage({
                           )}
                         </div>
                       </td>
-                      <td className="px-4 py-3 font-medium">
+                      <td className="px-6 py-4 font-medium text-gray-200">
                         {user.name || '—'}
                       </td>
-                      <td className="px-4 py-3">{user.email}</td>
-                      <td className="px-4 py-3">
+                      <td className="px-6 py-4 text-gray-300">{user.email}</td>
+                      <td className="px-6 py-4">
                         <span
                           className={cn(
-                            'rounded-full px-2 py-1 text-xs font-medium',
+                            'rounded-full px-3 py-1 text-xs font-medium',
                             user.Membership?.role === 'admin'
-                              ? 'bg-indigo-600 text-white'
-                              : 'bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-200',
+                              ? 'border border-[#7214FF]/30 bg-[#7214FF]/20 text-[#7214FF]'
+                              : 'border border-[#282D45] bg-[#282D45] text-gray-300',
                           )}
                         >
                           {user.Membership?.role || 'member'}
                         </span>
                       </td>
-                      <td className="px-4 py-3">{user.Membership?.xp || 0}</td>
-                      <td className="px-4 py-3">
-                        {formatDate(user.createdAt)}
+                      <td className="px-6 py-4">
+                        <span className="font-medium text-[#32CAFD]">
+                          {user.Membership?.xp || 0}
+                        </span>
                       </td>
-                      <td className="px-4 py-3">
+                      <td className="px-6 py-4 text-gray-400">
+                        {formatDate(user?.createdAt || '')}
+                      </td>
+                      <td className="px-6 py-4">
                         <span
                           className={cn(
-                            'rounded-full px-2 py-1 text-xs font-medium',
+                            'rounded-full px-3 py-1 text-xs font-medium',
                             user.isVerified
-                              ? 'bg-green-600 text-white'
-                              : 'bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-200',
+                              ? 'border border-green-500/30 bg-green-500/20 text-green-400'
+                              : 'border border-yellow-500/30 bg-yellow-500/20 text-yellow-400',
                           )}
                         >
                           {user.isVerified ? 'Verified' : 'Pending'}

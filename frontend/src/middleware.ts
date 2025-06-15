@@ -2,7 +2,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { i18nConfig } from '../i18nConfig';
 
-const PROTECTED_PATHS = ['/dashboard', '/profile'];
+const PROTECTED_PATHS = ['/dashboard', '/profile', '/invite'];
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 7 * 4 * 12 * 100; // ~100 years
 
 const checkAuthentication = (
@@ -16,7 +16,10 @@ const checkAuthentication = (
   );
 
   if (isProtectedPath && !token) {
-    return new URL(`/${locale}/login`, request.url);
+    const originalUrl = new URL(request.url);
+    const loginUrl = new URL(`/${locale}/login`, request.url);
+    loginUrl.search = originalUrl.search;
+    return loginUrl;
   }
 
   return url;

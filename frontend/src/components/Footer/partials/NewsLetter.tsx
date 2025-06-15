@@ -23,11 +23,8 @@ import {
 } from '@/components/ui/card';
 import clsx from 'clsx';
 import { newsletterSchema } from '@/lib/schemas/newsletterSchema';
-import { useUser } from '@/providers/userProvider/UserProvider';
 
 export const NewsLetter = () => {
-  const { user } = useUser();
-  console.log('user', user);
   const form = useForm<z.infer<typeof newsletterSchema>>({
     resolver: zodResolver(newsletterSchema),
     defaultValues: {
@@ -37,8 +34,7 @@ export const NewsLetter = () => {
   });
 
   async function onSubmit(values: z.infer<typeof newsletterSchema>) {
-    const action = await formHandlerAction(values);
-    console.log(action);
+    await formHandlerAction(values);
     form.reset();
   }
   return (

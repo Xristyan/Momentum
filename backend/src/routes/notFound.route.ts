@@ -1,5 +1,5 @@
 import express, { NextFunction, Request, Response } from "express";
-import { CustomError } from "../error/error";
+import { CustomError } from "../errors/error";
 
 const notFoundRouter = express.Router();
 

@@ -25,6 +25,7 @@
     "@types/node": "^22.6.1",
     "@types/passport": "^1.0.17",
     "@types/passport-google-oauth20": "^2.0.16",
+    "@types/uuid": "^10.0.0",
     "@typescript-eslint/eslint-plugin": "^8.7.0",
     "@typescript-eslint/parser": "^8.7.0",
     "eslint": "^9.11.1",
@@ -36,6 +37,7 @@
     "typescript-eslint": "^8.7.0"
   },
   "dependencies": {
+    "@aws-sdk/client-sqs": "^3.812.0",
     "axios": "^1.7.9",
     "cloudinary": "^2.6.0",
     "cookie-parser": "^1.4.7",

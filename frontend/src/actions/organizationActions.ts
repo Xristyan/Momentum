@@ -10,6 +10,7 @@ import {
 } from '@/lib/helpers/actionHelpers';
 import { RequestMethodsEnum } from '@/types/actions';
 import { Organization } from '@/types/organizations';
+import { inviteFormSchema } from '@/lib/schemas/invite.schema';
 
 export const createOrganization = async (
   formData: z.infer<typeof createOrganizationSchema>,
@@ -89,6 +90,39 @@ export const deleteOrganization = async (organizationId: number) => {
     `${process.env.BACKEND_URL_DOCKER}/organizations/${organizationId}`,
     {
       method: RequestMethodsEnum.DELETE,
+      credentials: 'include',
+      headers: {
+        Authorization: `Bearer ${jwt.value}`,
+      },
+    },
+  );
+
+  return formatResponse(response);
+};
+
+export const inviteUserToOrganization = async (
+  formData: z.infer<typeof inviteFormSchema>,
+  organizationId: string,
+) => {
+  const jwt = await getTokenFromCookie();
+
+  if (!jwt) {
+    return { success: false, message: 'Unauthorized' };
+  }
+
+  const validationResult = validateSchema(inviteFormSchema, formData);
+
+  if (!validationResult.success) {
+    return { success: false, errors: validationResult.errors };
+  }
+
+  const response = await fetchApi(
+    `${process.env.BACKEND_URL_DOCKER}/organizations/${organizationId}/invite`,
+    {
+      method: RequestMethodsEnum.POST,
+      body: {
+        email: validationResult.data.email,
+      },
       credentials: 'include',
       headers: {
         Authorization: `Bearer ${jwt.value}`,

@@ -11,41 +11,30 @@ import { cn } from '@/lib/utils';
 import clsx from 'clsx';
 import Link from 'next/link';
 
-const components = [
+const pricing = [
   {
-    title: 'Alert Dialog',
-    href: '/docs/primitives/alert-dialog',
+    title: 'Starter Plan',
+    href: '/pricing#starter',
     description:
-      'A modal dialog that interrupts the user with important content and expects a response.',
+      'Perfect for small teams just getting started with CRM management.',
   },
   {
-    title: 'Hover Card',
-    href: '/docs/primitives/hover-card',
+    title: 'Professional',
+    href: '/pricing#professional',
     description:
-      'For sighted users to preview content available behind a link.',
+      'Advanced features for growing engineering teams with complex workflows.',
   },
   {
-    title: 'Progress',
-    href: '/docs/primitives/progress',
+    title: 'Enterprise',
+    href: '/pricing#enterprise',
     description:
-      'Displays an indicator showing the completion progress of a task, typically displayed as a progress bar.',
+      'Full-scale solution with custom integrations and dedicated support.',
   },
   {
-    title: 'Scroll-area',
-    href: '/docs/primitives/scroll-area',
-    description: 'Visually or semantically separates content.',
-  },
-  {
-    title: 'Tabs',
-    href: '/docs/primitives/tabs',
+    title: 'Custom Solutions',
+    href: '/pricing#custom',
     description:
-      'A set of layered sections of content—known as tab panels—that are displayed one at a time.',
-  },
-  {
-    title: 'Tooltip',
-    href: '/docs/primitives/tooltip',
-    description:
-      'A popup that displays information related to an element when the element receives keyboard focus or the mouse hovers over it.',
+      'Tailored CRM solutions designed specifically for your organization needs.',
   },
 ];
 
@@ -62,23 +51,28 @@ export const NavMenu = () => {
               <li className="row-span-3">
                 <Link
                   className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
-                  href="/"
+                  href="/features"
                 >
-                  <div className="mb-2 mt-4 text-lg font-medium">shadcn/ui</div>
+                  <div className="mb-2 mt-4 text-lg font-medium">
+                    CRM Features
+                  </div>
                   <p className="text-sm leading-tight text-muted-foreground">
-                    Beautifully designed components built with Radix UI and
-                    Tailwind CSS.
+                    Powerful tools designed specifically for engineering teams
+                    to manage leads and streamline workflows.
                   </p>
                 </Link>
               </li>
-              <ListItem href="/docs" title="Introduction">
-                Re-usable components built using Radix UI and Tailwind CSS.
+              <ListItem
+                href="/features/lead-management"
+                title="Lead Management"
+              >
+                Complete lead tracking and pipeline management system.
               </ListItem>
-              <ListItem href="/docs/installation" title="Installation">
-                How to install dependencies and structure your app.
+              <ListItem href="/features/analytics" title="Team Analytics">
+                Comprehensive analytics and performance insights.
               </ListItem>
-              <ListItem href="/docs/primitives/typography" title="Typography">
-                Styles for headings, paragraphs, lists...etc
+              <ListItem href="/features/automation" title="Task Automation">
+                Automated workflows to boost team productivity.
               </ListItem>
             </ul>
           </NavigationMenuContent>
@@ -89,27 +83,23 @@ export const NavMenu = () => {
           </NavigationMenuTrigger>
           <NavigationMenuContent>
             <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-              {components.map((component) => (
-                <ListItem
-                  key={component.title}
-                  title={component.title}
-                  href={component.href}
-                >
-                  {component.description}
+              {pricing.map((plan) => (
+                <ListItem key={plan.title} title={plan.title} href={plan.href}>
+                  {plan.description}
                 </ListItem>
               ))}
             </ul>
           </NavigationMenuContent>
         </NavigationMenuItem>
         <NavigationMenuItem>
-          <Link href="/docs" legacyBehavior passHref>
+          <Link href="/resources" legacyBehavior passHref>
             <NavigationMenuLink
               className={clsx(
                 navigationMenuTriggerStyle(),
                 'text-[16px] tracking-wider',
               )}
             >
-              Documentation
+              Resources
             </NavigationMenuLink>
           </Link>
         </NavigationMenuItem>

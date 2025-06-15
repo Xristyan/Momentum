@@ -44,3 +44,24 @@ export const updateUserProfile = async (
 
   return formatResponse(response);
 };
+
+export const leaveOrganization = async (organizationId: number) => {
+  const jwt = await getTokenFromCookie();
+
+  if (!jwt) {
+    return { success: false, message: 'Unauthorized' };
+  }
+
+  const response = await fetchApi(
+    `${process.env.BACKEND_URL_DOCKER}/users/leave/${organizationId}`,
+    {
+      method: RequestMethodsEnum.DELETE,
+      headers: {
+        Authorization: `Bearer ${jwt.value}`,
+      },
+      credentials: 'include',
+    },
+  );
+
+  return formatResponse(response);
+};

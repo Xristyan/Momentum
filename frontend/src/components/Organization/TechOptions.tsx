@@ -1,5 +1,5 @@
 import { Checkbox } from '@/components/ui/checkbox';
-import { useTechnologiesQuery } from '../hooks/useTechnologies';
+import { useTechnologiesQuery } from '../../hooks/useTechnologies/useTechnologies';
 
 export const TechOptions = ({
   selectedTech,
@@ -11,7 +11,6 @@ export const TechOptions = ({
   const { data: techOptions, isLoading } = useTechnologiesQuery();
 
   const handleTechChange = (techId: string) => {
-    console.log('selectedTech', selectedTech);
     onChange(
       selectedTech.includes(techId)
         ? selectedTech.filter((id) => id !== techId)

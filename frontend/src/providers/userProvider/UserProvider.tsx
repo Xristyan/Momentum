@@ -21,6 +21,7 @@ interface UserData {
         role: string;
         xp: number;
         UserId: number;
+        creator: boolean;
         OrganizationId: number;
       };
     }>;

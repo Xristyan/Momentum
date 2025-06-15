@@ -17,7 +17,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart';
-import { useOrganization } from '@/providers/organizationProvider/OrganizationProvider';
+
 const chartData = [
   { month: 'January', desktop: 186, mobile: 80 },
   { month: 'February', desktop: 305, mobile: 200 },
@@ -30,23 +30,23 @@ const chartData = [
 const chartConfig = {
   desktop: {
     label: 'Desktop',
-    color: 'hsl(var(--chart-1))',
+    color: '#7214FF',
   },
   mobile: {
     label: 'Mobile',
-    color: 'hsl(var(--chart-2))',
+    color: '#32CAFD',
   },
 } satisfies ChartConfig;
 
 export function ChartOne() {
-  const { organization } = useOrganization();
-  console.log('organization', organization);
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Area Chart - Stacked</CardTitle>
-        <CardDescription>
-          Showing total visitors for the last 6 months
+    <Card className="border-[#282D45] bg-[#0E1330] transition-all duration-300 hover:border-[#7214FF]/50">
+      <CardHeader className="pb-4">
+        <CardTitle className="bg-gradient-to-b from-[#F6F6F7] to-[#7E808F] bg-clip-text text-xl font-semibold text-transparent">
+          Team Performance
+        </CardTitle>
+        <CardDescription className="text-gray-400">
+          Desktop vs Mobile engagement for the last 6 months
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -59,44 +59,66 @@ export function ChartOne() {
               right: 12,
             }}
           >
-            <CartesianGrid vertical={false} />
+            <defs>
+              <linearGradient id="desktopGradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#7214FF" stopOpacity={0.8} />
+                <stop offset="100%" stopColor="#7214FF" stopOpacity={0.1} />
+              </linearGradient>
+              <linearGradient id="mobileGradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#32CAFD" stopOpacity={0.8} />
+                <stop offset="100%" stopColor="#32CAFD" stopOpacity={0.1} />
+              </linearGradient>
+            </defs>
+            <CartesianGrid
+              vertical={false}
+              stroke="#282D45"
+              strokeOpacity={0.5}
+            />
             <XAxis
               dataKey="month"
               tickLine={false}
               axisLine={false}
               tickMargin={8}
+              tick={{ fill: '#7E808F', fontSize: 12 }}
               tickFormatter={(value) => value.slice(0, 3)}
             />
             <ChartTooltip
               cursor={false}
-              content={<ChartTooltipContent indicator="dot" />}
+              content={
+                <ChartTooltipContent
+                  indicator="dot"
+                  className="border-[#282D45] bg-[#1A1F3A]"
+                />
+              }
             />
             <Area
               dataKey="mobile"
               type="natural"
-              fill="var(--color-mobile)"
-              fillOpacity={0.4}
-              stroke="var(--color-mobile)"
+              fill="url(#mobileGradient)"
+              fillOpacity={1}
+              stroke="#32CAFD"
+              strokeWidth={2}
               stackId="a"
             />
             <Area
               dataKey="desktop"
               type="natural"
-              fill="var(--color-desktop)"
-              fillOpacity={0.4}
-              stroke="var(--color-desktop)"
+              fill="url(#desktopGradient)"
+              fillOpacity={1}
+              stroke="#7214FF"
+              strokeWidth={2}
               stackId="a"
             />
           </AreaChart>
         </ChartContainer>
       </CardContent>
-      <CardFooter>
+      <CardFooter className="pt-4">
         <div className="flex w-full items-start gap-2 text-sm">
           <div className="grid gap-2">
-            <div className="flex items-center gap-2 font-medium leading-none">
+            <div className="flex items-center gap-2 font-medium leading-none text-[#32CAFD]">
               Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
             </div>
-            <div className="flex items-center gap-2 leading-none text-muted-foreground">
+            <div className="flex items-center gap-2 leading-none text-gray-400">
               January - June 2024
             </div>
           </div>

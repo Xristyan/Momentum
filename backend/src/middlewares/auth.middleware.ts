@@ -1,4 +1,4 @@
-import { CustomError } from "../error/error";
+import { CustomError } from "../errors/error";
 import { Organization, User } from "../models";
 import { catchAsync } from "../utils/catchAsync";
 import { verifyToken } from "../utils/jwt";

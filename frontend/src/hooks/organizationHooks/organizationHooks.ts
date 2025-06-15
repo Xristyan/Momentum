@@ -6,7 +6,7 @@ import {
 import { createOrganizationSchema } from '@/lib/schemas/organizationSchema';
 import { z } from 'zod';
 import { useQueryClient } from '@tanstack/react-query';
-
+import { leaveOrganization as leaveOrganizationAction } from '@/actions/userActions';
 export const useCreateOrganization = () => {
   const queryClient = useQueryClient();
 
@@ -43,4 +43,19 @@ export const useDeleteOrganization = () => {
   });
 
   return { deleteOrganization, isPending };
+};
+
+export const useLeaveOrganization = () => {
+  const queryClient = useQueryClient();
+
+  const { mutate: leaveOrganization, isPending } = useMutation({
+    mutationFn: async (organizationId: number) => {
+      return await leaveOrganizationAction(organizationId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['user'] });
+    },
+  });
+
+  return { leaveOrganization, isPending };
 };

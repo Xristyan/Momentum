@@ -11,7 +11,6 @@ const OrganizationProvider: FC<
   PropsWithChildren<{ initialOrganization: Organization | null | undefined }>
 > = ({ children, initialOrganization }) => {
   const [orgId] = useState<number | null>(initialOrganization?.id || null);
-  console.log('initialOrganization', initialOrganization);
   const { data: organization, isLoading } = useQuery({
     queryKey: ['organization'],
     queryFn: () => getOrganization(orgId),

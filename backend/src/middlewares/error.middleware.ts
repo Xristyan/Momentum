@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { CustomError } from "../error/error";
+import { CustomError } from "../errors/error";
 import logger from "../config/logger";
 import axios, { AxiosError } from "axios";
 

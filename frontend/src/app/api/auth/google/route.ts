@@ -3,7 +3,6 @@ import { NextResponse } from 'next/server';
 
 export async function GET() {
   const redirectURL = `${process.env.NEXT_PUBLIC_API_URL}/api/auth/google/callback`;
-  console.log(redirectURL);
 
   const oAuth2Client = new OAuth2Client(
     process.env.AUTH_GOOGLE_ID,

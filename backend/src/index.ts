@@ -1,5 +1,9 @@
 import express from "express";
 
+import dotenv from "dotenv";
+
+dotenv.config();
+
 //Config
 import logger from "./config/logger";
 import helmet from "helmet";
@@ -21,6 +25,8 @@ import userRouter from "./routes/user.route";
 import authRouter from "./routes/auth.route";
 import organizationRouter from "./routes/organization.route";
 import technologiesRouter from "./routes/technologies.route";
+import invitationsRouter from "./routes/inviations.route";
+import webhooksRouter from "./routes/webhooks.route";
 
 const app = express();
 const port = process.env.PORT;
@@ -43,7 +49,10 @@ app.use("/auth", authRouter);
 app.use(userRouter);
 app.use(organizationRouter);
 app.use(technologiesRouter);
+app.use(invitationsRouter);
+app.use("/webhooks", webhooksRouter);
 app.use(notFoundRouter);
+
 app.use(errorMiddleware);
 
 process.on(

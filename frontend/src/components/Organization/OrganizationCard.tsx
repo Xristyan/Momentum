@@ -13,6 +13,7 @@ import { FaJira, FaGithub, FaSlack, FaMicrosoft } from 'react-icons/fa';
 import Link from 'next/link';
 import { Button } from '../ui/button';
 import { useDeleteOrganization } from '@/hooks/organizationHooks/organizationHooks';
+import { useLeaveOrganization } from '@/hooks/organizationHooks/organizationHooks';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -51,6 +52,7 @@ type OrganizationCardProps = {
     id: number;
     name: string;
     description?: string;
+    creator?: boolean;
     role?: string;
     memberCount?: number;
     technologies?: string[];
@@ -59,6 +61,7 @@ type OrganizationCardProps = {
 
 export const OrganizationCard = ({ organization }: OrganizationCardProps) => {
   const { deleteOrganization, isPending } = useDeleteOrganization();
+  const { leaveOrganization, isPending: leavePending } = useLeaveOrganization();
   const [open, setOpen] = useState(false);
 
   const handleDelete = () => {
@@ -114,7 +117,7 @@ export const OrganizationCard = ({ organization }: OrganizationCardProps) => {
       </CardContent>
 
       <CardFooter className="flex justify-between pt-2">
-        {organization.role === 'admin' && (
+        {organization.role === 'admin' && organization.creator ? (
           <AlertDialog open={open} onOpenChange={setOpen}>
             <AlertDialogTrigger asChild>
               <Button variant="destructive" size="sm" className="px-2">
@@ -142,6 +145,15 @@ export const OrganizationCard = ({ organization }: OrganizationCardProps) => {
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
+        ) : (
+          <Button
+            variant="outline"
+            size="sm"
+            className="bg-destructive hover:bg-destructive/80"
+            onClick={() => leaveOrganization(organization.id)}
+          >
+            {leavePending ? 'Leaving...' : 'Leave Organization'}
+          </Button>
         )}
         <Link
           target="_blank"

@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import { ThemeProvider } from 'next-themes';
+import { Toaster } from 'sonner';
 
 import { fetchUserFromSession } from '@/actions/authActions';
 import { UserProvider } from '@/providers/userProvider/UserProvider';
@@ -45,6 +46,7 @@ export default async function RootLayout({
               >
                 {children}
                 <LoadingOverlay />
+                <Toaster />
               </ThemeProvider>
             </UserProvider>
           </OverlayProvider>

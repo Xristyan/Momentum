@@ -1,7 +1,7 @@
 import { sign } from "jsonwebtoken";
 import { User } from "../models";
 import { catchAsync } from "../utils/catchAsync";
-import { CustomError } from "../error/error";
+import { CustomError } from "../errors/error";
 import { compare } from "../utils/passwordHashing";
 import { Response } from "express";
 
@@ -14,8 +14,8 @@ const attachCookies = (
     expires: new Date(
       Date.now() +
         (rememberMe
-          ? 30 * 24 * 60 * 60 * 1000 // 30 days for remember me
-          : Number(process.env.JWT_COOKIE_EXPIRES_IN) * 24 * 60 * 60 * 1000), // Default expiration
+          ? 30 * 24 * 60 * 60 * 1000
+          : Number(process.env.JWT_COOKIE_EXPIRES_IN) * 24 * 60 * 60 * 1000),
     ),
     httpOnly: true,
     ...(process.env.NODE_ENV === "production" && { secure: true }),
@@ -64,8 +64,6 @@ export const Register = catchAsync(async (req, res, next) => {
 export const Login = catchAsync(async (req, res, next) => {
   const { email, password, rememberMe } = req.body;
 
-  console.log("req.cookies", req.cookies);
-
   if (!email || !password) {
     return next(new CustomError("Please provide email and password", 400));
   }
@@ -76,15 +74,11 @@ export const Login = catchAsync(async (req, res, next) => {
     },
   });
 
-  console.log("user", user);
-
   if (!user || !(await compare(password, user.password))) {
     return next(new CustomError("Incorrect email or password", 401));
   }
 
   const token = signToken(res, user.id, rememberMe);
-
-  console.log("token", token);
 
   res.json({ token });
 });

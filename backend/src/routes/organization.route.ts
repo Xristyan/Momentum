@@ -4,6 +4,7 @@ import {
   deleteOrganization,
   getAllOrganizations,
   getOrganization,
+  inviteUserToOrganization,
 } from "../controllers/organization.controller";
 import { authMiddleware } from "../middlewares/auth.middleware";
 
@@ -18,5 +19,9 @@ organizationRouter
   .route("/organizations/:id")
   .get(authMiddleware, getOrganization)
   .delete(authMiddleware, deleteOrganization);
+
+organizationRouter
+  .route("/organizations/:id/invite")
+  .post(authMiddleware, inviteUserToOrganization);
 
 export default organizationRouter;
