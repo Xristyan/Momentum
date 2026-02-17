@@ -78,8 +78,3 @@ docker-compose up -d
 5. **Run the development server**
 ```bash
 npm run dev
-
-```
-someone who doesn't have time to download and run your code.
-
-**Would you like me to help you write a specific "Integration" logic description for how you connect Jira/GitHub to your XP system?**
