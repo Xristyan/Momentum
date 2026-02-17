@@ -2,8 +2,6 @@
 
 **Momentum** is a high-performance productivity platform designed to bridge the gap between project management and employee engagement. By integrating industry-standard tools like **Jira** and **GitHub** with a custom **XP-based reward system**, Momentum turns daily tasks into an addictive, collaborative experience.
 
-**[Live Demo]()** | **[Report Bug]()**
-
 ---
 
 ## 🚀 Core Features
